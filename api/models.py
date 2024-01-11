@@ -31,7 +31,11 @@ class Basket(models.Model):
     is_active=models.BooleanField(default=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-
+    
+    @property
+    def cart_item(self):
+        qs=self.cartitem.all()
+        return qs
 
 class BasketItem(models.Model):
     basket=models.ForeignKey(Basket,on_delete=models.CASCADE,related_name="cartitem")
@@ -40,13 +44,20 @@ class BasketItem(models.Model):
     is_active=models.BooleanField(default=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-    total=models.PositiveIntegerField(null=True)
+    
+
+    @property
+    def total(self):
+        return self.qty*self.product.price
 
 
-    def save(self,*args, **kwargs):
-        if not self.total:
-            self.total=self.product.price*self.qty
-        super().save(*args, **kwargs)   
+    # total=models.PositiveIntegerField(null=True)
+
+
+    # def save(self,*args, **kwargs):
+    #     if not self.total:
+    #         self.total=self.product.price*self.qty
+    #     super().save(*args, **kwargs)   
 
 
 def create_basket(sender,instance,created,**kwargs):
